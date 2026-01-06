@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://guerrerooliver183-star.github.io/adivina-el-numero/sitemap.xml

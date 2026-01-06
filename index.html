@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guess the Number!</title>
+
+  <!-- SEO -->
+  <meta name="description" content="Juego Adivina el Número Neon - estilo futurista, gratuito y online.">
+  <meta name="keywords" content="juego, adivina el número, neon, online game">
+
+  <!-- Verificación AdSense -->
+  <meta name="google-adsense-account" content="ca-pub-1507185555135622">
+
+  <!-- Tipografía Orbitron -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="PWA/icon-512.png" type="image/png">
+  <meta name="theme-color" content="#0d0d0d">
+
+  <style>
+    /* ====== ESTILO NEÓN ====== */
+    body {
+      margin: 0;
+      background: #0d0d0d;
+      font-family: 'Orbitron', sans-serif;
+      text-align: center;
+      color: #00f0ff;
+      overflow-x: hidden;
+    }
+
+    h1 { font-size: 3em; color: #00f0ff; text-shadow:0 0 5px #00f0ff,0 0 10px #00f0ff,0 0 20px #00f0ff,0 0 40px #00f0ff; margin:20px 0; }
+    p { font-size:1.2em; color:#ff00ff; text-shadow:0 0 5px #ff00ff,0 0 10px #ff00ff,0 0 20px #ff00ff; margin-bottom:20px; }
+    input, button, a { padding:12px; font-size:16px; margin:10px; background-color:#111; color:#00f0ff; border:2px solid #00f0ff; border-radius:10px; text-shadow:0 0 5px #00f0ff; box-shadow:0 0 10px #00f0ff,0 0 20px #ff00ff; transition:0.3s all; text-decoration:none; }
+    input:hover, button:hover, a:hover { box-shadow:0 0 20px #00f0ff,0 0 40px #ff00ff; }
+    button { cursor:pointer; font-weight:bold; }
+    button:hover { background-color:#00f0ff; color:#0d0d0d; text-shadow:0 0 5px #000; }
+
+    #resultado, #alerta, #acertados, #intentos { font-size:20px; margin-top:15px; font-weight:bold; text-shadow:0 0 5px #00f0ff,0 0 10px #ff00ff; }
+    #alerta { color:#ff073a; text-shadow:0 0 5px #ff073a,0 0 10px #ff073a; }
+    #acertados { color:#39ff14; text-shadow:0 0 5px #39ff14,0 0 10px #39ff14; }
+
+    #historial { display:none; margin-top:20px; max-width:400px; margin-left:auto; margin-right:auto; background-color:#111; padding:20px; border-radius:15px; border:2px solid #00f0ff; box-shadow:0 0 20px #00f0ff,0 0 40px #ff00ff; text-align:left; }
+    #historial h2 { margin-top:0; font-size:20px; text-align:center; text-shadow:0 0 10px #00f0ff; }
+    #historialLista li { margin-bottom:5px; font-size:14px; color:#00f0ff; text-shadow:0 0 5px #00f0ff; }
+
+    footer { margin-top:30px; padding:10px; color:#00f0ff; font-size:0.9em; text-shadow:0 0 5px #00f0ff,0 0 10px #ff00ff; }
+
+    body::after { content:''; position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg,#00f0ff20,#ff00ff20); pointer-events:none; animation:neonMove 15s infinite alternate; }
+    @keyframes neonMove { from{background-position:0% 0%;} to{background-position:100% 100%;} }
+
+    #legalFooter { margin-top:20px; }
+    #legalFooter button { padding:8px 15px; font-size:14px; }
+  </style>
+</head>
+<body>
+
+<h1 id="titulo"></h1>
+<p id="instrucciones"></p>
+
+<input type="number" id="numero" min="1" max="100">
+<button id="adivinarBtn"></button>
+
+<p id="resultado"></p>
+<p id="alerta"></p>
+<p id="intentos"></p>
+<p id="acertados"></p>
+
+<button id="toggleHistorial"></button>
+
+<div id="historial">
+  <h2 id="historialTitulo"></h2>
+  <ul id="historialLista"></ul>
+</div>
+
+<footer id="footer"></footer>
+
+<!-- BOTONES LEGALES -->
+<div id="legalFooter" style="text-align:center;">
+  <button id="btnTerms"></button> | 
+  <button id="btnPrivacy"></button> | 
+  <button id="btnCookies"></button>
+</div>
+
+<script>
+// ===================== DETECCIÓN AUTOMÁTICA DE IDIOMA =====================
+const userLang = navigator.language || navigator.userLanguage;
+const lang = userLang.startsWith('es') ? 'es' : 'en';
+
+// ===================== MENSAJES =====================
+const mensajes = {
+  es: {
+    titulo:"¡Adivina el número!",
+    instrucciones:"El sistema piensa un número del 1 al 100. ¿Puedes adivinarlo?",
+    adivinar:"Adivinar",
+    correcto:"¡Correcto! 🎉",
+    bajo:"Demasiado bajo ⬇️",
+    alto:"Demasiado alto ⬆️",
+    limite:"⚠ El número debe estar entre 1 y 100",
+    intentos:"Intentos",
+    acertados:"Números acertados",
+    historialBtn:"Historial de partidas 🔽",
+    historialTitulo:"Historial de partidas",
+    placeholder:"Escribe un número",
+    footer:"© Todos los derechos reservados 2026 — Oliver Guerrero & ChatGPT",
+    generando:"Generando número nuevo en"
+  },
+  en: {
+    titulo:"Guess the Number!",
+    instrucciones:"The system thinks of a number from 1 to 100. Can you guess it?",
+    adivinar:"Guess",
+    correcto:"Correct! 🎉",
+    bajo:"Too low ⬇️",
+    alto:"Too high ⬆️",
+    limite:"⚠ Number must be between 1 and 100",
+    intentos:"Attempts",
+    acertados:"Numbers guessed correctly",
+    historialBtn:"Game History 🔽",
+    historialTitulo:"Game History",
+    placeholder:"Enter a number",
+    footer:"© All Rights Reserved 2026 — Oliver Guerrero & ChatGPT",
+    generando:"Generating new number in"
+  }
+};
+
+// ===================== BOTONES LEGALES =====================
+const btnTerms = document.getElementById('btnTerms');
+const btnPrivacy = document.getElementById('btnPrivacy');
+const btnCookies = document.getElementById('btnCookies');
+
+function actualizarIdioma() {
+  document.documentElement.lang = lang;
+  document.getElementById('titulo').textContent = mensajes[lang].titulo;
+  document.getElementById('instrucciones').textContent = mensajes[lang].instrucciones;
+  document.getElementById('adivinarBtn').textContent = mensajes[lang].adivinar;
+  document.getElementById('numero').placeholder = mensajes[lang].placeholder;
+  document.getElementById('intentos').textContent = mensajes[lang].intentos + ": 0";
+  document.getElementById('acertados').textContent = mensajes[lang].acertados + ": 0";
+  document.getElementById('toggleHistorial').textContent = mensajes[lang].historialBtn;
+  document.getElementById('historialTitulo').textContent = mensajes[lang].historialTitulo;
+  document.getElementById('footer').textContent = mensajes[lang].footer;
+
+  btnTerms.textContent = lang==='es' ? "Términos" : "Terms";
+  btnPrivacy.textContent = lang==='es' ? "Privacidad" : "Privacy";
+  btnCookies.textContent = "Cookies";
+}
+
+btnTerms.onclick = () => window.open("terms.html","_blank");
+btnPrivacy.onclick = () => window.open("privacy.html","_blank");
+btnCookies.onclick = () => window.open("cookies.html","_blank");
+
+// ===================== JUEGO =====================
+let numeroSecreto = Math.floor(Math.random() * 100) + 1;
+let intentos = 0;
+let acertados = 0;
+let contadorInterval;
+
+const historialDiv = document.getElementById('historial');
+const historialLista = document.getElementById('historialLista');
+const toggleHistorial = document.getElementById('toggleHistorial');
+
+function cargarHistorial() {
+  historialLista.innerHTML = '';
+  const historial = JSON.parse(localStorage.getItem('historial')) || [];
+  historial.slice(-10).reverse().forEach(item => {
+    const li = document.createElement('li');
+    li.textContent = `${item.fecha} - ${lang==='es'?'Intentos':'Attempts'}: ${item.intentos}, ${lang==='es'?'Acertados':'Numbers guessed'}: ${item.acertados}`;
+    historialLista.appendChild(li);
+  });
+}
+
+function guardarHistorial() {
+  const historial = JSON.parse(localStorage.getItem('historial')) || [];
+  const ahora = new Date();
+  const fecha = ahora.toLocaleString(lang==='es'?'es-MX':'en-GB',{
+    year:'numeric', month:'2-digit', day:'2-digit',
+    hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false
+  });
+  historial.push({fecha,intentos,acertados});
+  localStorage.setItem('historial',JSON.stringify(historial));
+  cargarHistorial();
+}
+
+toggleHistorial.onclick = () => {
+  if(historialDiv.style.display==='none'||historialDiv.style.display===''){
+    historialDiv.style.display='block';
+    toggleHistorial.textContent = mensajes[lang].historialBtn.replace('🔽','🔼');
+  } else {
+    historialDiv.style.display='none';
+    toggleHistorial.textContent = mensajes[lang].historialBtn.replace('🔼','🔽');
+  }
+};
+
+const btn = document.getElementById('adivinarBtn');
+const input = document.getElementById('numero');
+const resultado = document.getElementById('resultado');
+const alerta = document.getElementById('alerta');
+const intentosTexto = document.getElementById('intentos');
+const acertadosTexto = document.getElementById('acertados');
+
+btn.onclick = () => {
+  const guess = Number(input.value);
+  if(!guess || guess < 1 || guess > 100) {
+    alerta.textContent = mensajes[lang].limite;
+    return;
+  }
+  alerta.textContent = '';
+  intentos++;
+  intentosTexto.textContent = `${mensajes[lang].intentos}: ${intentos}`;
+
+  if(guess === numeroSecreto) {
+    acertados++;
+    acertadosTexto.textContent = `${mensajes[lang].acertados}: ${acertados}`;
+    resultado.textContent = mensajes[lang].correcto;
+    guardarHistorial();
+
+    let tiempo = 5;
+    if(contadorInterval) clearInterval(contadorInterval);
+    contadorInterval = setInterval(() => {
+      if(tiempo >= 0){
+        resultado.textContent = `${mensajes[lang].generando} ${tiempo}...`;
+        tiempo--;
+      } else {
+        clearInterval(contadorInterval);
+        numeroSecreto = Math.floor(Math.random() * 100) + 1;
+        resultado.textContent = '';
+        intentos = 0;
+        intentosTexto.textContent = `${mensajes[lang].intentos}: ${intentos}`;
+      }
+    },1000);
+  } else {
+    resultado.textContent = guess < numeroSecreto ? mensajes[lang].bajo : mensajes[lang].alto;
+  }
+
+  input.value = '';
+  input.focus();
+};
+
+// ===================== INICIALIZACIÓN =====================
+actualizarIdioma();
+cargarHistorial();
+
+// ===================== PWA =====================
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('service-worker.js');
+}
+</script>
+
+</body>
+</html>

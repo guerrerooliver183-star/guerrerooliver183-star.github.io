@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Términos de Uso / Terms of Use</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body {
+  margin: 0; background: #0d0d0d; font-family: 'Orbitron', sans-serif;
+  color: #00f0ff; text-align: center; overflow-x: hidden;
+}
+h1 { font-size: 2.5em; margin-top: 30px; color:#00f0ff;
+    text-shadow:0 0 5px #00f0ff,0 0 10px #00f0ff,0 0 20px #00f0ff; }
+p { font-size:1.2em; margin:20px auto; max-width:600px;
+    text-shadow:0 0 5px #ff00ff,0 0 10px #ff00ff; color:#ff00ff; }
+button {
+  padding:12px 25px; font-size:16px; margin:20px; cursor:pointer;
+  background:#111; color:#00f0ff; border:2px solid #00f0ff;
+  border-radius:10px; text-shadow:0 0 5px #00f0ff;
+  box-shadow:0 0 10px #00f0ff,0 0 20px #ff00ff; transition:0.3s all;
+}
+button:hover { background:#00f0ff; color:#0d0d0d; text-shadow:0 0 5px #000; }
+
+body::after {
+  content:''; position:fixed; top:0; left:0; width:100%; height:100%;
+  background:linear-gradient(135deg,#00f0ff20,#ff00ff20);
+  pointer-events:none; animation:neonMove 15s infinite alternate;
+}
+@keyframes neonMove { from{background-position:0% 0%;} to{background-position:100% 100%;} }
+</style>
+</head>
+<body>
+
+<h1 id="titulo"></h1>
+<p id="texto"></p>
+<button id="aceptarBtn"></button>
+
+<script>
+const mensajes = {
+  es: {
+    titulo: "Términos de Uso",
+    texto: `Este juego "Adivina el Número Neon" se proporciona únicamente con fines educativos y de entretenimiento. 
+    No recopilamos datos personales de los usuarios, y toda la información de juego se guarda localmente en su navegador. 
+    Al jugar aceptas estos términos.`,
+    aceptar: "Aceptar"
+  },
+  en: {
+    titulo: "Terms of Use",
+    texto: `This "Guess the Number Neon" game is provided for educational and entertainment purposes only. 
+    No personal data is collected, and all game information is stored locally in your browser. 
+    By playing, you accept these terms.`,
+    aceptar: "Accept"
+  }
+};
+
+const idioma = navigator.language.startsWith('es') ? 'es' : 'en';
+const titulo = document.getElementById('titulo');
+const texto = document.getElementById('texto');
+const aceptarBtn = document.getElementById('aceptarBtn');
+
+titulo.textContent = mensajes[idioma].titulo;
+texto.textContent = mensajes[idioma].texto;
+aceptarBtn.textContent = mensajes[idioma].aceptar;
+
+aceptarBtn.onclick = () => {
+  window.location.href = "./index.html";
+};
+</script>
+
+</body>
+</html>
