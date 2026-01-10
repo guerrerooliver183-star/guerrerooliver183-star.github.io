@@ -1,6 +1,6 @@
 {
-  "name": "Guess the Number!",
-  "short_name": "Guess the Number!",
+  "name": "Guess the Number! Neon Edition",
+  "short_name": "Guess the Number! Neon Edition",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#f0f8ff",
