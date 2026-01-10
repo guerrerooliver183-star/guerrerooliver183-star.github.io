@@ -1,4 +1,4 @@
-const CACHE_NAME = 'adivina-numero-neon-v1.04';
+const CACHE_NAME = 'adivina-numero-neon-v1.05';
 
 const FILES_TO_CACHE = [
   './',
