@@ -136,6 +136,23 @@
       opacity: 0.6;
     }
 
+    /* SPINNER AJUSTADO A LA IZQUIERDA */
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(0, 240, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--neon-blue);
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px; /* Margen a la derecha para separar del texto */
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     .arrow {
       font-size: 1.2em;
       vertical-align: middle;
@@ -145,7 +162,7 @@
     .arrow-up { color: var(--neon-pink); text-shadow: 0 0 10px var(--neon-pink); }
     .arrow-down { color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); }
 
-    #resultado { font-size: 24px; min-height: 40px; margin-top: 15px; }
+    #resultado { font-size: 24px; min-height: 40px; margin-top: 15px; line-height: 1.5; }
     #alerta { color: var(--neon-red); text-shadow: 0 0 10px var(--neon-red); min-height: 25px; }
 
     .bg-animation {
@@ -260,16 +277,29 @@ function procesarIntento() {
   if(guess === numeroSecreto) {
     acertados++;
     acertadosTexto.textContent = `${mensajes[lang].acertados}: ${acertados}`;
-    resultado.innerHTML = mensajes[lang].correcto;
+    
+    // Muestra Acceso Concedido
+    resultado.innerHTML = `<span style="color: var(--neon-green);">${mensajes[lang].correcto}</span>`;
     btn.disabled = true;
     guardarHistorial();
 
     let tiempo = 5;
     if(contadorInterval) clearInterval(contadorInterval);
+    
+    // Función para actualizar el texto manteniendo "Acceso Concedido"
+    const actualizarCuenta = () => {
+      resultado.innerHTML = `
+        <span style="color: var(--neon-green);">${mensajes[lang].correcto}</span><br>
+        <div class="spinner"></div> ${mensajes[lang].generando} ${tiempo}...
+      `;
+    };
+
+    actualizarCuenta();
+
     contadorInterval = setInterval(() => {
+      tiempo--;
       if(tiempo >= 0){
-        resultado.innerHTML = `${mensajes[lang].generando} ${tiempo}...`;
-        tiempo--;
+        actualizarCuenta();
       } else {
         clearInterval(contadorInterval);
         numeroSecreto = Math.floor(Math.random() * 100) + 1;
@@ -330,7 +360,6 @@ toggleHistorial.onclick = () => {
   historialDiv.style.display = (historialDiv.style.display==='none'||historialDiv.style.display==='') ? 'block' : 'none';
 };
 
-// --- AQUÍ ESTÁN LAS REDIRECCIONES RESTAURADAS ---
 document.getElementById('btnTerms').onclick = () => window.location.href = 'terms.html';
 document.getElementById('btnPrivacy').onclick = () => window.location.href = 'privacy.html';
 document.getElementById('btnCookies').onclick = () => window.location.href = 'cookies.html';
